@@ -16,8 +16,13 @@
 'use strict';
 
 // [START kms_quickstart]
-// Imports the Google APIs client library
-const {google} = require('googleapis');
+// TODO: googleapis doesn't have kms v2
+// // Imports the Google APIs client library
+// import kms client lib
+const kms = require('@google-cloud/kms');
+
+// initialize kms client with application defaults credentials
+const client = new kms.v1.KeyManagementServiceClient();
 
 // Your Google Cloud Platform project ID
 const projectId = process.env.GCLOUD_PROJECT;
@@ -25,34 +30,24 @@ const projectId = process.env.GCLOUD_PROJECT;
 // Lists keys in the "global" location.
 const location = 'global';
 
-// Acquires credentials
-google.auth
-  .getClient({scopes: ['https://www.googleapis.com/auth/cloud-platform']})
-  .then(auth => {
-    // Instantiates an authorized client
-    const cloudkms = google.cloudkms({
-      version: 'v1',
-      auth,
-    });
-    const request = {
-      parent: `projects/${projectId}/locations/${location}`,
-    };
+var formattedParent = client.locationPath(projectId, location);
 
-    // Lists key rings
-    cloudkms.projects.locations.keyRings.list(request, (err, result) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
 
-      const keyRings = result.data.keyRings || [];
+// // Lists key rings
+client.listKeyRings({parent: formattedParent}, (err, result) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  const keyRings = result || [];
 
-      if (keyRings.length) {
-        console.log('Key rings:');
-        keyRings.forEach(keyRing => console.log(keyRing.name));
-      } else {
-        console.log(`No key rings found.`);
-      }
-    });
-  });
+  if (keyRings.length) {
+    console.log('Key rings:');
+    keyRings.forEach(keyRing => console.log(keyRing.name));
+  } else {
+    console.log('No key rings found.');
+  }
+
+});
+
 // [END kms_quickstart]

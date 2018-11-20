@@ -15,6 +15,7 @@
     "test": "repo-tools test run --cmd ava -- -T 20s --verbose system-test/*.test.js"
   },
   "dependencies": {
+    "@google-cloud/kms": "^0.2.0",
     "googleapis": "^35.0.0",
     "safe-buffer": "5.1.1",
     "yargs": "11.0.0"
