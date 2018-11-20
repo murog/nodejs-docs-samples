@@ -17,12 +17,13 @@
 
 // [START kms_quickstart]
 // TODO: googleapis doesn't have kms v2
-// // Imports the Google APIs client library
-// import kms client lib
+// const {google} = require('googleapis');
+
+// Imports the Google APIs client library
 const kms = require('@google-cloud/kms');
 
-// initialize kms client with application defaults credentials
-const client = new kms.v1.KeyManagementServiceClient();
+// Creates a client
+const client = new kms.KeyManagementServiceClient();
 
 // Your Google Cloud Platform project ID
 const projectId = process.env.GCLOUD_PROJECT;
@@ -30,16 +31,16 @@ const projectId = process.env.GCLOUD_PROJECT;
 // Lists keys in the "global" location.
 const location = 'global';
 
+// The resource name of the key rings.
 var formattedParent = client.locationPath(projectId, location);
 
+// Builds the request
+const request = { parent: formattedParent }
 
-// // Lists key rings
-client.listKeyRings({parent: formattedParent}, (err, result) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  const keyRings = result || [];
+// Queries the API
+client.listKeyRings(request).then(result => {
+  // Iterates through and prints results
+  const keyRings = result[0] || [];
 
   if (keyRings.length) {
     console.log('Key rings:');
@@ -47,7 +48,8 @@ client.listKeyRings({parent: formattedParent}, (err, result) => {
   } else {
     console.log('No key rings found.');
   }
-
+}).catch(err => {
+  console.log('ERROR: ', err);
 });
 
 // [END kms_quickstart]
